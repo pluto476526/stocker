@@ -1,2 +1,1 @@
 check why the stock transactions view is not working
-users view
