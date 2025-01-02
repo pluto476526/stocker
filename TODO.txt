@@ -1,3 +1,2 @@
 check why the stock transactions view is not working
 users view
-register new managers/users/ is_staff
