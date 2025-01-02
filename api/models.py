@@ -1,7 +1,6 @@
 # api/models.py
 
 from django.db import models, transaction
-from decimal import Decimal
 import logging
 
 # Get logger
@@ -11,6 +10,7 @@ logger = logging.getLogger(__name__)
 class WareHouse(models.Model):
     name = models.CharField(max_length=20)
     location = models.CharField(max_length=20)
+    manager = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -42,6 +42,7 @@ class Product(models.Model):
     stock_level = models.PositiveIntegerField(default=0)
     reorder_threshold = models.PositiveIntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('timestamp',)
@@ -50,9 +51,6 @@ class Product(models.Model):
         return self.name
     
     def save(self, *args, **kwargs):
-        """
-        Update Stock Transaction
-        """
         # Check if stock level is being updated
         if self.pk:
             original = Product.objects.get(pk=self.pk)
@@ -66,8 +64,7 @@ class Product(models.Model):
                 # Create a stock transaction attomically
                 with transaction.atomic():
                     super().save(*args, **kwargs)
-                    logger.debug(original.price)
-                    logger.debug(delta)
+                    
                     StockTransaction.objects.create(
                         product_id = self,
                         transaction_type = transaction_type,
@@ -86,7 +83,7 @@ class StockTransaction(models.Model):
 
     CHOICES_TYPE = (
         (ADD, 'add'),
-        (REMOVE, 'Remove'),
+        (REMOVE, 'remove'),
     )
 
     product_id = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)

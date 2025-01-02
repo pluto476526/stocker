@@ -1,0 +1,43 @@
+{
+    "token": "9f133e85c134a4d9133641ad23065ec6c34f11f3",
+    "user_id": 1,
+    "username": "trinity"
+}
+
+// Register
+{
+    "username": "gyakie",
+    "email": "gyakie@email.com",
+    "password": "12341234"
+}
+
+// Login
+{
+    "username": "pluto",
+    "password": ""
+}
+
+// Add a category
+{
+    "name": "space travel",
+    "description": "a cool space rocket"
+}
+
+// Add supplier
+{
+    "name": "suplier 001",
+    "contact_info": "sup1@email.com"
+}
+
+// Add warehouse
+{
+    "name": "warehouse 6",
+    "location": "kismayu",
+    "manager": "1"
+}
+
+// Add product
+
+// Add user
+
+

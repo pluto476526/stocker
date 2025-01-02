@@ -1,13 +1,30 @@
 # api/serializers.py
 
 from rest_framework import serializers
-from api.models import WareHouse, Category, Product, Supplier, StockTransaction
+from django.contrib.auth.models import User
+from api.models import (
+    WareHouse,
+    Category,
+    Product,
+    Supplier,
+    StockTransaction,
+)
 
 
+class ManagerSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = ['id', 'username', 'email']
+		
+		
 class WareHouseSerializer(serializers.ModelSerializer):
+    # Foreign key
+    # manager = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(profile__is_staff=True))
+    manager_details = ManagerSerializer(source='manager', read_only=True)
+
     class Meta:
         model = WareHouse
-        fields = '__all__'
+        fields = ['id', 'name', 'location', 'manager_details']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -29,9 +46,9 @@ class ProductSerializer(serializers.ModelSerializer):
     warehouse = serializers.PrimaryKeyRelatedField(queryset=WareHouse.objects.all())
 
     # Show detailed nested representation
-    category_detail = CategorySerializer(source='category', read_only=True)
-    supplier_detail = SupplierSerializer(source='supplier', read_only=True)
-    warehouse_detail = WareHouseSerializer(source='warehouse', read_only=True)
+    category_details = CategorySerializer(source='category', read_only=True)
+    supplier_details = SupplierSerializer(source='supplier', read_only=True)
+    warehouse_details = WareHouseSerializer(source='warehouse', read_only=True)
 
     class Meta:
         model = Product
@@ -41,19 +58,21 @@ class ProductSerializer(serializers.ModelSerializer):
             'description',
             'price',
             'category',
-            'category_detail',
+            'category_details',
             'supplier',
-            'supplier_detail',
+            'supplier_details',
             'warehouse',
-            'warehouse_detail',
+            'warehouse_details',
             'stock_level',
             'reorder_threshold',
             'timestamp',
+            'updated_at',
         ]
 
 
 class StockTransactionSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    queryset = Product.objects.all()
+    product = serializers.PrimaryKeyRelatedField(queryset=queryset)
     product_detail = ProductSerializer(source='product_id', read_only=True)
 
     class Meta:

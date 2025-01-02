@@ -1,7 +1,9 @@
 # api/views.py
 
-from rest_framework import viewsets, status, response, decorators
+from rest_framework import viewsets, status, response, decorators, permissions
 from django.db.models import Q, Sum, F, Subquery, OuterRef
+from django.contrib.auth.models import User
+from api.permissions import IsManagerOrReadOnly
 from api.mixins import FilterByNameMixin
 from api.models import (
     WareHouse,
@@ -17,22 +19,44 @@ from api.serializers import (
     SupplierSerializer,
     StockTransactionSerializer,
 )
+import logging
 
+
+# Get logger
+logger = logging.getLogger(__name__)
 
 
 class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     queryset = WareHouse.objects.all()
     serializer_class = WareHouseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                id = request.data.get('manager')
+                manager = User.objects.get(id=id)
+                serializer.save(manager=manager)
+                return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+            return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return response.Response(
+                {"detail": "Manager with the given ID does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class CategoryViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated, IsManagerOrReadOnly]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -77,9 +101,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @decorators.action(detail=False, methods=['get'])
     def inventory_report(self, request):
-        """
-        Generate inventory report
-        """
         # Aggregates
         total_inventory_value = Product.objects.aggregate(
             total_value=Sum(F('price') * F('stock_level'))
