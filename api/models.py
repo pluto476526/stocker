@@ -1,6 +1,8 @@
 # api/models.py
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
+from notifications.models import Notification
 import logging
 
 # Get logger
@@ -61,7 +63,7 @@ class Product(models.Model):
                     StockTransaction.ADD if delta > 0 else StockTransaction.REMOVE
                 )
                 
-                # Create a stock transaction attomically
+                # Create a stock transaction atomically
                 with transaction.atomic():
                     super().save(*args, **kwargs)
                     
@@ -71,10 +73,22 @@ class Product(models.Model):
                         quantity = abs(delta),
                         amount = int(original.price) * abs(delta)
                     )
+
+                    # Create notification if below reorder threshold
+                    if self.stock_level < self.reorder_threshold:
+                        manager = self.warehouse.manager
+                        if manager:
+                            Notification.objects.create(
+                                recipient = manager,
+                                verb = f'"{self.name}" is blelow the reorder threshold. Please reorder.',
+                                target_content_type = ContentType.objects.get_for_model(self),
+                                target_object_id = self.pk,
+                            )
                 return
 
         # Save normally if stock level was not edited
         super().save(*args, **kwargs)
+
 
 
 class StockTransaction(models.Model):
