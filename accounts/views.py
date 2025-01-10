@@ -7,7 +7,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from accounts.permissions import IsSuperUserOrReadOnly
+from accounts.permissions import IsSuperUserOnly
 from accounts.serializers import RegisterSerializer, UserSerializer
 from accounts.models import Profile
 
@@ -38,11 +38,16 @@ class CustomObtainAuthTokenView(ObtainAuthToken):
 class UserListViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsSuperUserOrReadOnly]
+    permission_classes = [IsSuperUserOnly]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            Profile.objects.create(
+                user = user,
+                in_staff = True,
+                in_superusers = True,
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

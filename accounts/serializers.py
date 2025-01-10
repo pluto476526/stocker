@@ -26,7 +26,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['is_staff', 'is_superuser']
+        fields = ['in_staff', 'in_superusers']
 
 
 class UserSerializer(serializers.ModelSerializer):

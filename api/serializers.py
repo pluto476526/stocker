@@ -71,15 +71,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class StockTransactionSerializer(serializers.ModelSerializer):
-    queryset = Product.objects.all()
-    product = serializers.PrimaryKeyRelatedField(queryset=queryset)
+    # product = serializers.PrimaryKeyRelatedField(queryset=queryset)
     product_detail = ProductSerializer(source='product_id', read_only=True)
 
     class Meta:
         model = StockTransaction
         fields = [
             'id',
-            'product',
+            'product_id',
             'product_detail',
             'transaction_type',
             'quantity',

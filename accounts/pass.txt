@@ -1,7 +1,7 @@
 {
-    "token": "9f133e85c134a4d9133641ad23065ec6c34f11f3",
-    "user_id": 1,
-    "username": "trinity"
+    "token": "8cf07e97ec866623cb63a0fb7bff1bd97a45d16d",
+    "user_id": 4,
+    "username": "pluto2"
 }
 
 // Register
@@ -37,6 +37,16 @@
 }
 
 // Add product
+{
+    "name": "pd002",
+    "description": "small desc",
+    "price": "300",
+    "category": "1",
+    "supplier": "1",
+    "warehouse": "1",
+    "stock_level": "3320",
+    "reorder_threshold": "100"
+}
 
 // Add user
 

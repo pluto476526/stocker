@@ -1,9 +1,10 @@
 # api/views.py
 
-from rest_framework import viewsets, status, response, decorators, permissions
+from rest_framework import viewsets, status, response, decorators, generics, pagination
 from django.db.models import Q, Sum, F, Subquery, OuterRef
 from django.contrib.auth.models import User
-from api.permissions import IsManagerOrReadOnly
+from accounts.permissions import IsSuperUserOnly
+from api.permissions import IsManagerOrReadOnly, IsSuperUserOrReadOnly
 from api.mixins import FilterByNameMixin
 from api.models import (
     WareHouse,
@@ -29,7 +30,8 @@ logger = logging.getLogger(__name__)
 class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     queryset = WareHouse.objects.all()
     serializer_class = WareHouseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsSuperUserOnly]
+    pagination_class = pagination.PageNumberPagination
 
     def create(self, request, *args, **kwargs):
         try:
@@ -50,13 +52,14 @@ class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
 class CategoryViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+    permission_classes = [IsSuperUserOrReadOnly]
+    pagination_class = pagination.PageNumberPagination
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated, IsManagerOrReadOnly]
+    permission_classes = [IsManagerOrReadOnly]
+    pagination_class = pagination.PageNumberPagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -146,10 +149,20 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class SupplierViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     queryset = Supplier.objects.all()
+    permission_classes = [IsSuperUserOnly]
     serializer_class = SupplierSerializer
+    pagination_class = pagination.PageNumberPagination
 
 
-class StockTransactionViewSet(viewsets.ModelViewSet):
+class StockTransactionListView(generics.ListAPIView):
     queryset = StockTransaction.objects.all()
+    permission_classes = [IsSuperUserOnly]
     serializer_class = StockTransactionSerializer
+    pagination_class = pagination.PageNumberPagination
 
+    
+class StockTransactionDetailView(generics.RetrieveAPIView):
+    queryset = StockTransaction.objects.all()
+    permission_classes = [IsSuperUserOnly]
+    serializer_class = StockTransactionSerializer
+    
