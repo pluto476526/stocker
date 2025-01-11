@@ -127,7 +127,9 @@ Stocker API is a backend application designed using Django and Django REST Frame
 **Response:**
 ```json
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    "token": "8cf07e97ec866623cb63a0fb7bff1bd97a45d16d",
+    "user_id": 1,
+    "username": "pluto"
 }
 ```
 
