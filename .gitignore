@@ -3,8 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Django dev settings module
+settings.py
+
 # Env
-/st/
+/dj/
 
 # C extensions
 *.so

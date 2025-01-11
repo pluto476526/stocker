@@ -28,12 +28,18 @@ logger = logging.getLogger(__name__)
 
 
 class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
+    """
+    Allows superusers and managers to manage warehouses
+    """
     queryset = WareHouse.objects.all()
     serializer_class = WareHouseSerializer
     permission_classes = [IsSuperUserOnly]
     pagination_class = pagination.PageNumberPagination
 
     def create(self, request, *args, **kwargs):
+    """
+    Adds the manager from the user object
+    """
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
@@ -50,18 +56,29 @@ class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
 
 
 class CategoryViewSet(FilterByNameMixin, viewsets.ModelViewSet):
+    """
+    Allows superusers to manage categories
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsSuperUserOrReadOnly]
     pagination_class = pagination.PageNumberPagination
 
+
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    Allows all users to view all available products
+    Only warehouse managers can add, edit or delete products
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsManagerOrReadOnly]
     pagination_class = pagination.PageNumberPagination
 
     def get_queryset(self):
+    """
+    Returns the queryset for filtering
+    """
         queryset = super().get_queryset()
         params = self.request.query_params
         filters = Q()
@@ -104,6 +121,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @decorators.action(detail=False, methods=['get'])
     def inventory_report(self, request):
+    """
+    Generate an overview of the shop
+    """
         # Aggregates
         total_inventory_value = Product.objects.aggregate(
             total_value=Sum(F('price') * F('stock_level'))
@@ -148,6 +168,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class SupplierViewSet(FilterByNameMixin, viewsets.ModelViewSet):
+    """
+    Allows superusers to manage suppliers
+    """
     queryset = Supplier.objects.all()
     permission_classes = [IsSuperUserOnly]
     serializer_class = SupplierSerializer
@@ -155,6 +178,9 @@ class SupplierViewSet(FilterByNameMixin, viewsets.ModelViewSet):
 
 
 class StockTransactionListView(generics.ListAPIView):
+    """
+    Allows superusers to view stock transactions
+    """
     queryset = StockTransaction.objects.all()
     permission_classes = [IsSuperUserOnly]
     serializer_class = StockTransactionSerializer
@@ -162,6 +188,9 @@ class StockTransactionListView(generics.ListAPIView):
 
     
 class StockTransactionDetailView(generics.RetrieveAPIView):
+    """
+    Allows users to view details of a specific transaction
+    """
     queryset = StockTransaction.objects.all()
     permission_classes = [IsSuperUserOnly]
     serializer_class = StockTransactionSerializer

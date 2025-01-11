@@ -18,8 +18,6 @@ class ManagerSerializer(serializers.ModelSerializer):
 		
 		
 class WareHouseSerializer(serializers.ModelSerializer):
-    # Foreign key
-    # manager = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(profile__is_staff=True))
     manager_details = ManagerSerializer(source='manager', read_only=True)
 
     class Meta:

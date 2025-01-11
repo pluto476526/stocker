@@ -39,7 +39,7 @@ class IsSuperUserOrReadOnly(BasePermission):
     """
     Custom write permissions for superusers and read only permissions for evryone else
     """
-    def has_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
 

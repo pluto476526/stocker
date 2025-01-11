@@ -12,9 +12,15 @@ from accounts.serializers import RegisterSerializer, UserSerializer
 from accounts.models import Profile
 
 class RegisterView(APIView):
+    """
+    Allows users to register
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+    """
+    Overides the post method to create a profile after registering the user
+    """
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -25,6 +31,9 @@ class RegisterView(APIView):
 
 
 class CustomObtainAuthTokenView(ObtainAuthToken):
+    """
+    Assigns a unique authentication token
+    """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
@@ -36,11 +45,18 @@ class CustomObtainAuthTokenView(ObtainAuthToken):
 
 
 class UserListViewSet(viewsets.ModelViewSet):
+    """
+    Allows superusers to view and edit users
+    """
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsSuperUserOnly]
 
     def create(self, request, *args, **kwargs):
+    """
+    Overides the create method
+    Allows superusers to create users
+    """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
