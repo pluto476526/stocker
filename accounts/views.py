@@ -18,9 +18,9 @@ class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-    """
-    Overides the post method to create a profile after registering the user
-    """
+        """
+        Overides the post method to create a profile after registering the user
+        """
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -53,10 +53,10 @@ class UserListViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperUserOnly]
 
     def create(self, request, *args, **kwargs):
-    """
-    Overides the create method
-    Allows superusers to create users
-    """
+        """
+        Overides the create method
+        Allows superusers to create users
+        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()

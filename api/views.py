@@ -37,9 +37,9 @@ class WareHouseViewSet(FilterByNameMixin, viewsets.ModelViewSet):
     pagination_class = pagination.PageNumberPagination
 
     def create(self, request, *args, **kwargs):
-    """
-    Adds the manager from the user object
-    """
+        """
+        Adds the manager from the user object
+        """
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
@@ -76,9 +76,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.PageNumberPagination
 
     def get_queryset(self):
-    """
-    Returns the queryset for filtering
-    """
+        """
+        Returns the queryset for filtering
+        """
         queryset = super().get_queryset()
         params = self.request.query_params
         filters = Q()
@@ -121,9 +121,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @decorators.action(detail=False, methods=['get'])
     def inventory_report(self, request):
-    """
-    Generate an overview of the shop
-    """
+        """
+        Generate an overview of the shop
+        """
         # Aggregates
         total_inventory_value = Product.objects.aggregate(
             total_value=Sum(F('price') * F('stock_level'))

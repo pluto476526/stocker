@@ -14,9 +14,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password']
     
     def create(self, validated_data):
-    """
-    Overides the create method to create a token obj
-    """
+        """
+        Overides the create method to create a token obj
+        """
         user = get_user_model().objects.create_user(
         	username = validated_data['username'],
         	email = validated_data['email'],
