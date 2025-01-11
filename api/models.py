@@ -53,10 +53,10 @@ class Product(models.Model):
         return self.name
     
     def save(self, *args, **kwargs):
-    """
-    Creates a stock transaction if the quantity of products is being updated
-    Creates a notification for the manager if current stock levels are below reorder threshold
-    """
+        """
+        Creates a stock transaction if the quantity of products is being updated
+        Creates a notification for the manager if current stock levels are below reorder threshold
+        """
         # Check if stock level is being updated
         if self.pk:
             original = Product.objects.get(pk=self.pk)
