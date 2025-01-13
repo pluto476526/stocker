@@ -29,7 +29,7 @@ Stocker API is a backend application designed using Django and Django REST Frame
   - **Email** (Unique)
   - **Password** (Hashed)
 - Authentication ensures that only logged-in users can manage inventory items.
-- Permissions restrict users to managing only their own inventory items.
+- Permissions restrict managing inventory items to warehouse managers only.
 
 ### 3. View Inventory Levels
 - An endpoint to view current inventory levels for all items.
